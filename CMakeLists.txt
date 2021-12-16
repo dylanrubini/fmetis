@@ -30,7 +30,7 @@ endif()
 
 # Handle real size
 if (REAL)
-    message("Configuring build for ${INT}-bit reals")
+    message("Configuring build for ${REAL}-bit reals")
     add_definitions(-DREAL${REAL})
 else()
     message("Configuring build for 32-bit reals")
@@ -52,6 +52,16 @@ if (CMAKE_Fortran_COMPILER_ID MATCHES Intel)
     set(CMAKE_Fortran_FLAGS_DEBUG   "${common} -O0 -g -C -traceback")
 endif ()
 
+if (CMAKE_Fortran_COMPILER_ID MATCHES PGI)
+    set(common "")
+    set(CMAKE_Fortran_FLAGS_RELEASE "${common} -O3")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "${common} -O0 -g ")
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES NVHPC)
+    set(common "")
+    set(CMAKE_Fortran_FLAGS_RELEASE "${common} -O3")
+    set(CMAKE_Fortran_FLAGS_DEBUG   "${common} -O0 -g ")    
+endif (CMAKE_Fortran_COMPILER_ID MATCHES NVHPC)
+
 # Find METIS library
 if (NOT METIS_LIB)
     find_library(METIS_LIB metis)
@@ -72,7 +82,7 @@ message("Installation prefix: ${CMAKE_INSTALL_PREFIX}")
 
 
 # Library to archive (libfmetis.a)
-add_library(fmetis src/lib/metis_interface.f90 src/lib/metis_oo_interface.f90)
+add_library(fmetis src/lib/metis_interface.F90 src/lib/metis_oo_interface.F90)
 target_link_libraries(fmetis ${METIS_LIB})
 
 # Tests
